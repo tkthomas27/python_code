@@ -4,13 +4,13 @@
 import pandas as pd
 tourney = pd.read_csv("/Users/kthomas1/github/python_code/bracketsim_test.csv", delimiter='\t')
 
-east = tourney.loc[tourney.region == "east",['seed','stat']]
+east = tourney.loc[tourney.region == "east",['seed','stat','team']]
 east.name = "east"
-west = tourney.loc[tourney.region == "west",['seed','stat']]
+west = tourney.loc[tourney.region == "west",['seed','stat','team']]
 west.name = "west"
-south = tourney.loc[tourney.region == "south",['seed','stat']]
+south = tourney.loc[tourney.region == "south",['seed','stat','team']]
 south.name = "south"
-midwest = tourney.loc[tourney.region == "midwest",['seed','stat']]
+midwest = tourney.loc[tourney.region == "midwest",['seed','stat','team']]
 midwest.name = "midwest"
 
 results = {'east':{'round1':"x",'round2':"x",'round3':"x",'round4':"x"},
@@ -123,70 +123,19 @@ results['midwest']['round4'] = round4_seeds
 round4 = midwest[midwest.seed.isin(round4_seeds)]
 
 
-final_four = pd.DataFrame()
-final_four = final_four.append(west[west.seed == results['west']['round4']])
-final_four = final_four.append(east[east.seed == results['east']['round4']])
-final_four = final_four.append(south[south.seed == results['south']['round4']])
-final_four = final_four.append(midwest[midwest.seed == results['midwest']['round4']])
+final_four1 = pd.DataFrame()
+final_four2 = pd.DataFrame()
+final_four1 = final_four1.append(west[west.seed == results['west']['round4']])
+final_four1 = final_four1.append(east[east.seed == results['east']['round4']])
+final_four2 = final_four2.append(south[south.seed == results['south']['round4']])
+final_four2 = final_four2.append(midwest[midwest.seed == results['midwest']['round4']])
 
+# rounds function works here but we need to see the names; originally just had one final_four group; but split into two
 
+monday = pd.DataFrame()
+monday = monday.append(final_four1[final_four1.index == final_four1.stat.idxmax()])
+monday = monday.append(final_four2[final_four2.index == final_four2.stat.idxmax()])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def region(region):
-    
-    regname = region.name
-    
-    winners = []
-    round1_seeds = rounds(region)
-    results[regname]['round1'] = round1_seeds
-    round1 = region[region.seed.isin(round1_seeds)]
-    
-    winners = []
-    round2_seeds = rounds(round1)
-    results[regname]['round2'] = round2_seeds
-    round2 = region[region.seed.isin(round2_seeds)]
-    
-    winners = []
-    round3_seeds = rounds(round2)
-    results[regname]['round3'] = round3_seeds
-    round3 = region[region.seed.isin(round3_seeds)]
-    
-    winners = []
-    round4_seeds = rounds(round3)
-    results[regname]['round4'] = round4_seeds
-    round4 = region[region.seed.isin(round4_seeds)]
-
-winners = []
-region(midwest)
-region(east)
-region(west)
-region(south)
-
+champ = monday[monday.index == monday.stat.idxmax()]
 
 
