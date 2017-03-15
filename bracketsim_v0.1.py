@@ -1,29 +1,16 @@
 
 # https://www.reddit.com/r/CollegeBasketball/comments/5xir8t/calculating_win_probability_and_margin_of_victory/
 
-# things to improve
-# region definition
-# addint to results dict
-# region function
-# final four function: puts together winners and then runs region function
-# develop tournament function
-# better metric
-# simulation: compute probability of victory -> 
-    # randomly draw 100,000 [0,1], if prob>draw then advance team
-    # compute which team has most advances
-
-
-
 import pandas as pd
-tourney = pd.read_csv("/Users/kthomas1/github/python_code/bracketsim_kenpom.csv",delimiter="\t")
+tourney = pd.read_csv("/Users/kthomas1/github/python_code/bracketsim_kenpom.csv")
 
-east = tourney.loc[tourney.region == "east",['seed','team','adjem','adjt','adjo','adjd','luck']]
+east = tourney.loc[tourney.region == "east",['seed','team','adjem','adjt']]
 east.name = "east"
-west = tourney.loc[tourney.region == "west",['seed','team','adjem','adjt','adjo','adjd','luck']]
+west = tourney.loc[tourney.region == "west",['seed','team','adjem','adjt']]
 west.name = "west"
-south = tourney.loc[tourney.region == "south",['seed','team','adjem','adjt','adjo','adjd','luck']]
+south = tourney.loc[tourney.region == "south",['seed','team','adjem','adjt']]
 south.name = "south"
-midwest = tourney.loc[tourney.region == "midwest",['seed','team','adjem','adjt','adjo','adjd','luck']]
+midwest = tourney.loc[tourney.region == "midwest",['seed','team','adjem','adjt']]
 midwest.name = "midwest"
 
 results = {'east':{'round1':"x",'round2':"x",'round3':"x",'round4':"x"},
@@ -163,72 +150,4 @@ monday = monday.append(final_four2.loc[0]) if margin>0 else monday.append(final_
 
 margin = ((monday.adjem[0]-monday.adjem[1])*(monday.adjt[0] + monday.adjt[1]))/200
 champ = monday.loc[0] if margin>0 else monday.loc[1]
-
-        
-# need to create whole bracket simulation
-    # one random draw
-    # gen basic prob
-    # if prob>.8(<.2) add luck to 0(1)
-    # if prob>.9(<.1) add luck x5
-    # if prob>.95(<.05) add luck x10
-    # if prob>.5 add(subtract) .15 if AdjOE is greater(less than)
-    # if prob<.5 add(subtract) .15 if AdjoE is greater(less than)
-    # winning team progresses
-    # eventually simulate whole brackets; now just game by game
-
-# simulation
-import random
-import math
-random.seed(342)
-
-# CDF = 0.5 * (1 + erf((x - u)/(sigma*sqrt(2)))
-tset = south.iloc[4:6]
-tset = tset.reset_index(drop=True)
-margin = ((tset.adjem[0]-tset.adjem[1])*(tset.adjt[0] + tset.adjt[1]))/200
-prob = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
-probo = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
-
-count = 0
-for rep in range(10000):
-    x=random.uniform(0,1)
-    prob = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
-    prob = prob+tset.luck[0] if x>.8 else prob
-    prob = prob+(2*tset.luck[0]) if x>.9 else prob
-    prob = prob+(10*tset.luck[0]) if x>.97 else prob
-    
-    prob = prob+.15 if tset.adjo[0]>tset.adjo[1] and x>.5 else prob
-    prob = prob-.15 if tset.adjo[0]<tset.adjo[1] and x>.5 else prob
-    
-    prob = prob+.15 if tset.adjd[0]<tset.adjd[1] and x<.5 else prob
-    prob = prob-.15 if tset.adjd[0]>tset.adjd[1] and x<.5 else prob
-    
-    if prob>x:
-        count += 1
-    
-print("win") if count>7000 else print("null")
-print("lose") if count<3000 else print("null")
-print("win") if count<7000 and count>3000 and x>.5 else print("null")
-print("lose") if count<7000 and count>3000 and x<.5 else print("null")
-
-
-
-
-
-
-tset = east.iloc[0:2]
-tset = tset.reset_index(drop=True)
-margin = ((tset.adjem[0]-tset.adjem[1])*(tset.adjt[0] + tset.adjt[1]))/200
-probo = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
-prob = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
-x=random.uniform(0,1)
-prob = prob+tset.luck[0] if x>.8 else prob
-prob = prob+(2*tset.luck[0]) if x>.9 else prob
-prob = prob+(10*tset.luck[0]) if x>.97 else prob
-    
-prob = prob+.15 if tset.adjo[0]>tset.adjo[1] and x>.5 else prob
-prob = prob-.15 if tset.adjo[0]<tset.adjo[1] and x>.5 else prob
-    
-prob = prob+.15 if tset.adjd[0]>tset.adjd[1] and x<.5 else prob
-prob = prob-.15 if tset.adjd[0]<tset.adjd[1] and x<.5 else prob
-
 
