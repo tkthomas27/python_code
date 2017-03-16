@@ -54,30 +54,30 @@ def win(matchup):
         prob = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
         
         # luck
-        if x>.9:
-            prob = prob + (matchup.luck[0]*10)
-        elif x>.7:
-            prob = prob + (matchup.luck[0]*5)            
+        if x>.5:
+            prob = prob + (matchup.luck[0]*1)
+        elif x>.3:
+            prob = prob + (matchup.luck[0]*1)            
 
         if x>.5:
             if matchup.adjo[0]>matchup.adjo[1]:
-                prob = prob + .15
+                prob = prob + .05
             else:
-                prob = prob - .15
+                prob = prob - .05
         else:
             if matchup.adjd[0]<matchup.adjd[1]:
-                prob = prob + .15
+                prob = prob + .05
             else:
-                prob = prob - .15
+                prob = prob - .05
         
         # compare new probability to x, if 
         if prob>x:
             count += 1
     
-    winners.append(matchup.seed[0]) if count>7500 else None
-    winners.append(matchup.seed[1]) if count<2500 else None
-    winners.append(matchup.seed[0]) if count<7500 and count>2500 and x>.5 else None
-    winners.append(matchup.seed[1]) if count<7500 and count>2500 and x<.5 else None
+    winners.append(matchup.seed[0]) if count>9000 else None
+    winners.append(matchup.seed[1]) if count<1000 else None
+    winners.append(matchup.seed[0]) if count<9000 and count>1000 and x>.5 else None
+    winners.append(matchup.seed[1]) if count<9000 and count>1000 and x<.5 else None
 
 def split_list(a_list):
     half = int(len(a_list)/2)
@@ -102,97 +102,114 @@ def rounds(teams):
     
     return winners
 
+
 # east
 winners = []
 round1_seeds = rounds(east)
-results['east']['round1'] = round1_seeds
+rnd = east[east['seed'].isin(round1_seeds)].team.tolist()
+results['east']['round1'] = rnd
 round1 = east[east.seed.isin(round1_seeds)]
 
 winners = []
 round2_seeds = rounds(round1)
-results['east']['round2'] = round2_seeds
+rnd = east[east['seed'].isin(round2_seeds)].team.tolist()
+results['east']['round2'] = rnd
 round2 = east[east.seed.isin(round2_seeds)]
 
 winners = []
 round3_seeds = rounds(round2)
-results['east']['round3'] = round3_seeds
+rnd = east[east['seed'].isin(round3_seeds)].team.tolist()
+results['east']['round3'] = rnd
 round3 = east[east.seed.isin(round3_seeds)]
 
 winners = []
 round4_seeds = rounds(round3)
-results['east']['round4'] = round4_seeds
+rnd = east[east['seed'].isin(round4_seeds)].team.tolist()
+results['east']['round4'] = rnd
 round4 = east[east.seed.isin(round4_seeds)]
 
 # south
 winners = []
 round1_seeds = rounds(south)
-results['south']['round1'] = round1_seeds
+rnd = south[south['seed'].isin(round1_seeds)].team.tolist()
+results['south']['round1'] = rnd
 round1 = south[south.seed.isin(round1_seeds)]
 
 winners = []
 round2_seeds = rounds(round1)
-results['south']['round2'] = round2_seeds
+rnd = south[south['seed'].isin(round2_seeds)].team.tolist()
+results['south']['round2'] = rnd
 round2 = south[south.seed.isin(round2_seeds)]
 
 winners = []
 round3_seeds = rounds(round2)
-results['south']['round3'] = round3_seeds
+rnd = south[south['seed'].isin(round3_seeds)].team.tolist()
+results['south']['round3'] = rnd
 round3 = south[south.seed.isin(round3_seeds)]
 
 winners = []
 round4_seeds = rounds(round3)
-results['south']['round4'] = round4_seeds
+rnd = south[south['seed'].isin(round4_seeds)].team.tolist()
+results['south']['round4'] = rnd
 round4 = south[south.seed.isin(round4_seeds)]
 
 # west
 winners = []
 round1_seeds = rounds(west)
-results['west']['round1'] = round1_seeds
+rnd = west[west['seed'].isin(round1_seeds)].team.tolist()
+results['west']['round1'] = rnd
 round1 = west[west.seed.isin(round1_seeds)]
 
 winners = []
 round2_seeds = rounds(round1)
-results['west']['round2'] = round2_seeds
+rnd = west[west['seed'].isin(round2_seeds)].team.tolist()
+results['west']['round2'] = rnd
 round2 = west[west.seed.isin(round2_seeds)]
 
 winners = []
 round3_seeds = rounds(round2)
-results['west']['round3'] = round3_seeds
+rnd = west[west['seed'].isin(round3_seeds)].team.tolist()
+results['west']['round3'] = rnd
 round3 = west[west.seed.isin(round3_seeds)]
 
 winners = []
 round4_seeds = rounds(round3)
-results['west']['round4'] = round4_seeds
+rnd = west[west['seed'].isin(round4_seeds)].team.tolist()
+results['west']['round4'] = rnd
 round4 = west[west.seed.isin(round4_seeds)]
 
 # midwest
 winners = []
 round1_seeds = rounds(midwest)
-results['midwest']['round1'] = round1_seeds
+rnd = midwest[midwest['seed'].isin(round1_seeds)].team.tolist()
+results['midwest']['round1'] = rnd
 round1 = midwest[midwest.seed.isin(round1_seeds)]
 
 winners = []
 round2_seeds = rounds(round1)
-results['midwest']['round2'] = round2_seeds
+rnd = midwest[midwest['seed'].isin(round2_seeds)].team.tolist()
+results['midwest']['round2'] = rnd
 round2 = midwest[midwest.seed.isin(round2_seeds)]
 
 winners = []
 round3_seeds = rounds(round2)
-results['midwest']['round3'] = round3_seeds
+rnd = midwest[midwest['seed'].isin(round3_seeds)].team.tolist()
+results['midwest']['round3'] = rnd
 round3 = midwest[midwest.seed.isin(round3_seeds)]
 
 winners = []
 round4_seeds = rounds(round3)
-results['midwest']['round4'] = round4_seeds
+rnd = midwest[midwest['seed'].isin(round4_seeds)].team.tolist()
+results['midwest']['round4'] = rnd
 round4 = midwest[midwest.seed.isin(round4_seeds)]
 
 
 final_four1 = pd.DataFrame()
 final_four2 = pd.DataFrame()
-final_four1 = final_four1.append(west[west.seed == results['west']['round4']])
-final_four1 = final_four1.append(east[east.seed == results['east']['round4']])
-final_four2 = final_four2.append(south[south.seed == results['south']['round4']])
-final_four2 = final_four2.append(midwest[midwest.seed == results['midwest']['round4']])
+final_four1 = final_four1.append(west[west.team == ''.join(results['west']['round4'])])
+final_four1 = final_four1.append(east[east.team == ''.join(results['east']['round4'])])
+final_four2 = final_four2.append(south[south.team == ''.join(results['south']['round4'])])
+final_four2 = final_four2.append(midwest[midwest.team == ''.join(results['midwest']['round4'])])
 
 final_four1 = final_four1.reset_index(drop=True)
 final_four2 = final_four2.reset_index(drop=True)
@@ -210,12 +227,21 @@ monday = monday.append(final_four1[final_four1.seed == winners])
 
 winners = []
 win(final_four2)
-monday = monday.append(final_four1[final_four2.seed == winners])
+monday = monday.append(final_four2[final_four2.seed == winners])
 
 monday.seed = [0,1]
 
 winners = []
 win(monday)
+
+
+
+
+
+
+
+
+
 
         
 # need to create whole bracket simulation
