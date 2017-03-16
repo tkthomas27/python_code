@@ -15,6 +15,8 @@
 
 
 import pandas as pd
+import random
+import math
 tourney = pd.read_csv("/Users/kthomas1/github/python_code/bracketsim_kenpom.csv",delimiter="\t")
 
 east = tourney.loc[tourney.region == "east",['seed','team','adjem','adjt','adjo','adjd','luck']]
@@ -32,6 +34,51 @@ results = {'east':{'round1':"x",'round2':"x",'round3':"x",'round4':"x"},
     'west':{'round1':"x",'round2':"x",'round3':"x",'round4':"x"}
 }
 
+def win(matchup):
+
+    # reset index to 0,1
+    matchup = matchup.reset_index(drop=True)
+    # compute margin of victory to get probability of win
+    margin = ((matchup.adjem[0]-matchup.adjem[1])*(matchup.adjt[0] + matchup.adjt[1]))/200
+    # original probability
+    probo = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
+    
+    # initialize count
+    count = 0
+    # simulation
+    for rep in range(10000):
+        
+        # random number
+        x=random.uniform(0,1)
+        # original probability
+        prob = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
+        
+        # luck
+        if x>.9:
+            prob = prob + (matchup.luck[0]*10)
+        elif x>.7:
+            prob = prob + (matchup.luck[0]*5)            
+
+        if x>.5:
+            if matchup.adjo[0]>matchup.adjo[1]:
+                prob = prob + .15
+            else:
+                prob = prob - .15
+        else:
+            if matchup.adjd[0]<matchup.adjd[1]:
+                prob = prob + .15
+            else:
+                prob = prob - .15
+        
+        # compare new probability to x, if 
+        if prob>x:
+            count += 1
+    
+    winners.append(matchup.seed[0]) if count>7500 else None
+    winners.append(matchup.seed[1]) if count<2500 else None
+    winners.append(matchup.seed[0]) if count<7500 and count>2500 and x>.5 else None
+    winners.append(matchup.seed[1]) if count<7500 and count>2500 and x<.5 else None
+
 def split_list(a_list):
     half = int(len(a_list)/2)
     dat1 = a_list[:half]
@@ -43,9 +90,7 @@ def split_list(a_list):
 def rounds(teams):
     
     if len(teams) == 2:
-        teams = teams.reset_index(drop=True)
-        margin = ((teams.adjem[0]-teams.adjem[1])*(teams.adjt[0] + teams.adjt[1]))/200
-        winners.append(teams.seed[0]) if margin>0 else winners.append(teams.seed[1])
+        win(teams)
         
     if len(teams) < 2:
         return 0
@@ -152,17 +197,25 @@ final_four2 = final_four2.append(midwest[midwest.seed == results['midwest']['rou
 final_four1 = final_four1.reset_index(drop=True)
 final_four2 = final_four2.reset_index(drop=True)
 
+final_four1.seed = [0,1]
+final_four2.seed = [0,1]
+
 # rounds function works here but we need to see the names; originally just had one final_four group; but split into two
 
 monday = pd.DataFrame()
-margin = ((final_four1.adjem[0]-final_four1.adjem[1])*(final_four1.adjt[0] + final_four1.adjt[1]))/200
-monday = monday.append(final_four1.loc[0]) if margin>0 else monday.append(final_four1.loc[1])
 
-margin = ((final_four2.adjem[0]-final_four2.adjem[1])*(final_four2.adjt[0] + final_four2.adjt[1]))/200
-monday = monday.append(final_four2.loc[0]) if margin>0 else monday.append(final_four2.loc[1])
+winners = []
+win(final_four1)
+monday = monday.append(final_four1[final_four1.seed == winners])
 
-margin = ((monday.adjem[0]-monday.adjem[1])*(monday.adjt[0] + monday.adjt[1]))/200
-champ = monday.loc[0] if margin>0 else monday.loc[1]
+winners = []
+win(final_four2)
+monday = monday.append(final_four1[final_four2.seed == winners])
+
+monday.seed = [0,1]
+
+winners = []
+win(monday)
 
         
 # need to create whole bracket simulation
@@ -182,7 +235,7 @@ import math
 random.seed(342)
 
 # CDF = 0.5 * (1 + erf((x - u)/(sigma*sqrt(2)))
-tset = south.iloc[4:6]
+tset = midwest.iloc[4:6]
 tset = tset.reset_index(drop=True)
 margin = ((tset.adjem[0]-tset.adjem[1])*(tset.adjt[0] + tset.adjt[1]))/200
 prob = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
@@ -202,7 +255,7 @@ for rep in range(10000):
     prob = prob+.15 if tset.adjd[0]<tset.adjd[1] and x<.5 else prob
     prob = prob-.15 if tset.adjd[0]>tset.adjd[1] and x<.5 else prob
     
-    if prob>x:
+    if prob>.5:
         count += 1
     
 print("win") if count>7000 else print("null")
@@ -211,6 +264,71 @@ print("win") if count<7000 and count>3000 and x>.5 else print("null")
 print("lose") if count<7000 and count>3000 and x<.5 else print("null")
 
 
+def win(matchup):
+
+    # reset index to 0,1
+    matchup = matchup.reset_index(drop=True)
+    # compute margin of victory to get probability of win
+    margin = ((matchup.adjem[0]-matchup.adjem[1])*(matchup.adjt[0] + matchup.adjt[1]))/200
+    # original probability
+    probo = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
+    
+    # initialize count
+    count = 0
+    # simulation
+    for rep in range(10000):
+        
+        # random number
+        x=random.uniform(0,1)
+        # original probability
+        prob = 1-(0.5 * (1 + math.erf((0-margin)/(11*math.sqrt(2)))))
+        
+        # luck
+        if x>.9:
+            prob = prob + (matchup.luck[0]*10)
+        elif x>.7:
+            prob = prob + (matchup.luck[0]*5)            
+
+        if x>.5:
+            if matchup.adjo[0]>matchup.adjo[1]:
+                prob = prob + .15
+            else:
+                prob = prob - .15
+        else:
+            if matchup.adjd[0]<matchup.adjd[1]:
+                prob = prob + .15
+            else:
+                prob = prob - .15
+        
+        # compare new probability to x, if 
+        if prob>x:
+            count += 1
+    
+    winners.append(matchup.seed[0]) if count>7500 else None
+    winners.append(matchup.seed[1]) if count<2500 else None
+    winners.append(matchup.seed[0]) if count<7500 and count>2500 and x>.5 else None
+    winners.append(matchup.seed[1]) if count<7500 and count>2500 and x<.5 else None
+    
+ 
+
+winners = []
+tset = midwest.iloc[4:6]
+win(tset)
+
+      
+print("win") if count>7000 else None
+print("lose") if count<3000 else print("null")
+print("win") if count<7000 and count>3000 and x>.5 else print("null")
+print("lose") if count<7000 and count>3000 and x<.5 else print("null")
+
+        # if x is greater than .5, offense wins
+        prob = prob + .15 if matchup.adjo[0]>matchup.adjo[1] and x>.5 else prob
+        prob = prob - .15 if matchup.adjo[0]<matchup.adjo[1] and x>.5 else prob
+        
+        # if x is less than .5, defense wins
+        prob = prob + .15 if matchup.adjd[0]<matchup.adjd[1] and x<.5 else prob
+        prob = prob - .15 if matchup.adjd[0]>matchup.adjd[1] and x<.5 else prob
+        
 
 
 
@@ -230,5 +348,6 @@ prob = prob-.15 if tset.adjo[0]<tset.adjo[1] and x>.5 else prob
     
 prob = prob+.15 if tset.adjd[0]>tset.adjd[1] and x<.5 else prob
 prob = prob-.15 if tset.adjd[0]<tset.adjd[1] and x<.5 else prob
+
 
 
